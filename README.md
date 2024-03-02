@@ -3,7 +3,7 @@
 
 This repository contains a pipeline to generate runtime monitors connected to behavior trees. 
 
-The monitors are generated using [NASA Copilot](https://copilot-language.github.io/), a runtime verification framework built in Haskell Functional Programming Language. NASA Copilot allows for the generation of runtime monitors for safety specifications in C99 that can then be connected via ROS to Python applications. 
+The monitors are generated using [NASA Copilot](https://copilot-language.github.io/), a runtime verification framework built in Haskell Functional Programming Language. NASA Copilot allows for the generation of runtime monitors in C99 that can then be connected via ROS to Python applications. 
 
 ### Motivation  
 There is an increasing number of behavior trees (BTs) being used in cyber-physical systems for their interpretability and modularity. These systems include safety and liveness specifications that need to be satisfied at runtime and compatible with BT execution. Therefore, we developed a pipeline to efficiently generate runtime verification monitors and integrate into behavior tree execution to estabilish assurance guarantees.
