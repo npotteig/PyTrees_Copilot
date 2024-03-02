@@ -121,7 +121,7 @@ You can find the full implementation of `task_update_vars.py` in `src/example_he
 
 **Note**: This file can be modified or even replaced with the intended behavior for your system. `bt_node.py` can also be freely modified with new behaviors or structure. This is merely a starting point and not the final design for the BT. 
 
-Finally, we launch our script to view the behavior tree execute and the value of temperature at each tick.
+Finally, we launch our script to view the behavior tree execution and the value of temperature at each tick.
 
 ```bash
 ./src/launch.sh -p heater_pkg
