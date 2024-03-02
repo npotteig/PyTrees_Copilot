@@ -1,0 +1,98 @@
+#include <functional>
+#include <memory>
+
+#include "rclcpp/rclcpp.hpp"
+#include "rmw/qos_profiles.h"
+
+#include "std_msgs/msg/bool.hpp"
+#include "std_msgs/msg/empty.hpp"
+#include "std_msgs/msg/u_int8.hpp"
+#include "std_msgs/msg/u_int16.hpp"
+#include "std_msgs/msg/u_int32.hpp"
+#include "std_msgs/msg/u_int64.hpp"
+#include "std_msgs/msg/int8.hpp"
+#include "std_msgs/msg/int16.hpp"
+#include "std_msgs/msg/int32.hpp"
+#include "std_msgs/msg/int64.hpp"
+#include "std_msgs/msg/float32.hpp"
+#include "std_msgs/msg/float64.hpp"
+#include <cstdint>
+
+#include "monitor.h"
+#include "monitor.c"
+
+using std::placeholders::_1;
+
+{% for name, type, _, _ in externs %}
+{{ type }} {{ name }};
+{% endfor %}
+
+class CopilotRV : public rclcpp::Node {
+  public:
+    CopilotRV() : Node("copilotrv") {
+      /*
+        Added QoS Profile to the Subscription and Publisher
+      */
+      rclcpp::QoS qos(1);
+      qos.transient_local();
+
+
+      {% for name, _, topic_name, topic_type in externs %}
+      {{ name }}_subscription_ = this->create_subscription<{{ topic_type }}>(
+        "{{ topic_name }}", qos,
+        std::bind(&CopilotRV::{{ name }}_callback, this, _1));
+      {% endfor %}
+
+      {% for name, _, topic_name in handlers%}
+      {{ name }}_publisher_ = this->create_publisher<std_msgs::msg::Empty>(
+        "{{ topic_name }}", qos);
+      {% endfor %}
+
+    }
+
+    {% for name, _, _ in handlers%}
+    // Report (publish) monitor violations.
+    void {{ name }}() {
+      auto output = std_msgs::msg::Empty();
+      {{ name }}_publisher_->publish(output);
+    }
+    {% endfor %}
+
+    // Needed so we can report messages to the log.
+    static CopilotRV& getInstance() {
+      static CopilotRV instance;
+      return instance;
+    }
+
+  private:
+    {% for name, _, _, topic_type in externs %}
+    void {{ name }}_callback(const {{ topic_type }}::SharedPtr msg) const {
+      {{ name }} = msg->data;
+      step();
+    }
+    {% endfor %}
+  
+    {% for name, _, _, topic_type in externs %}
+    rclcpp::Subscription<{{ topic_type }}>::SharedPtr {{ name }}_subscription_;
+    {% endfor %}
+
+    {% for name, _, _ in handlers%}
+    rclcpp::Publisher<std_msgs::msg::Empty>::SharedPtr {{ name }}_publisher_;
+    {% endfor %}
+
+};
+
+{% for name, args, _ in handlers%}
+// Pass monitor violations to the actual class, which has ways to
+// communicate with other applications.
+void {{ name }}({% for arg_type, arg_name in args%}{{ arg_type}} {{ arg_name}}{% if not loop.last %}, {% endif %}{% endfor %}) {
+  CopilotRV::getInstance().{{ name }}();
+}
+{% endfor %}
+
+int main(int argc, char* argv[]) {
+  rclcpp::init(argc, argv);
+  rclcpp::spin(std::make_shared<CopilotRV>());
+  rclcpp::shutdown();
+  return 0;
+}

@@ -1,0 +1,47 @@
+{
+  "name": "ROS 2 humble-ros-core and Copilot 3.18.1 Workspace",
+  "remoteUser": "rosdev",
+  "build": {
+      "dockerfile": "Dockerfile",
+      "args": {
+          "USERNAME": "rosdev",
+          "USER_UID": "1000",
+          "USER_GID": "1000",
+          "GHC_VERSION": "9.6.3",
+          "CABAL_VERSION": "3.4",
+          "REPO": "https://github.com/Copilot-Language/copilot",
+          "REPO_NAME":"copilot",
+          "REPO_COMMIT":"835deafa4727c60741337a84cf7b8dce705f6e41"
+      }
+  },
+  "customizations": {
+      "vscode": {
+          "extensions": [
+              "ms-azuretools.vscode-docker",
+              "haskell.haskell",
+              "ms-python.python",
+              "charliermarsh.ruff",
+              "ms-vscode.cpptools-extension-pack",
+              "smilerobotics.urdf",
+              "redhat.vscode-xml",
+              "tamasfe.even-better-toml",
+              "timonwong.shellcheck",
+              "yzhang.markdown-all-in-one",
+          ],
+          "settings": {
+              "files.associations": {
+                  "*.rviz": "yaml",
+                  "*.srdf": "xml",
+                  "*.urdf": "xml",
+                  "*.xacro": "xml"
+              }
+          }
+      }
+  },
+  "workspaceFolder": "/home/rosdev/ros2_ws",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/home/rosdev/ros2_ws/src,type=bind",
+  "mounts": [],
+  "runArgs": [
+      "--net=host"
+  ]
+}
