@@ -93,7 +93,7 @@ class BT(rclpy.node.Node):
         """
         tasks = py_trees.composites.Sequence(name="Tasks", memory=True)
         update_temp = task_update_vars.TaskHandler(
-            name="Update Temperature",
+            name="Update Blackboard Variables",
             blackboard_variables=[{% for name, _, _ in externs %}"{{ name }}",{% endfor %}],
             qos_profile=self.latching_qos
         )
